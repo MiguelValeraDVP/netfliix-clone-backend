@@ -41,14 +41,9 @@ async function getUserDislikedMoviesList(req, res) {
 }
 
 async function signup(req, res) {
-  console.log("entro en signup");
   const { email, password } = req.body;
-  console.log(email, password);
   try {
-    console.log(User);
-    console.log("entro en try");
     const existingUser = await User.findOne({ email });
-    console.log("existing user:", existingUser);
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
@@ -60,15 +55,12 @@ async function signup(req, res) {
       password: hashedPassword,
     });
 
-    console.log("new user:", newUser);
 
     const saveUser = await newUser.save();
     if (saveUser) {
-      console.log("se creo new user");
       return res.json({ message: "user created", userData: newUser });
     }
   } catch (error) {
-    console.log("retorno el catch");
     return res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -199,7 +191,6 @@ async function addToDislikeList(req, res) {
     );
 
     if (movieAlreadyDisliked) {
-      console.log("ya está en esta lista");
       return res.json({ message: "Movie already exist on List" });
     }
 
@@ -208,7 +199,6 @@ async function addToDislikeList(req, res) {
       { DislikedMovies: [...user.DislikedMovies, data] },
       { new: true }
     );
-    console.log("se agreg[o a la lista de dislike");
     return res.status(200).json({
       message: "Movie added successfully",
       userUpdatedData: updateDislikedList,
@@ -219,11 +209,9 @@ async function addToDislikeList(req, res) {
 }
 
 async function removeMovieFromList(req, res) {
-  console.log("entro en remove");
   try {
     const { mail, data } = req.body;
 
-    console.log("mail:", mail, "data:", data);
 
     const user = await User.findOne({ email: mail });
     if (!user) {
@@ -231,14 +219,12 @@ async function removeMovieFromList(req, res) {
     }
     const { ListMovies } = user;
 
-    console.log(ListMovies);
 
     if (ListMovies) {
       const movieIndex = ListMovies.findIndex(({ id }) => id === data.id);
 
       if (movieIndex > -1) {
         ListMovies.splice(movieIndex, 1);
-        console.log(ListMovies);
         await User.findByIdAndUpdate(
           user._id,
           { ListMovies: ListMovies },
@@ -247,7 +233,6 @@ async function removeMovieFromList(req, res) {
       }
     }
 
-    console.log("eliminada");
 
     return res.status(200).json({
       message: "Movie deleted from list successfully",
