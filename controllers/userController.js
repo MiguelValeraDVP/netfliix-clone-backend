@@ -41,25 +41,34 @@ async function getUserDislikedMoviesList(req, res) {
 }
 
 async function signup(req, res) {
+  console.log("entro en signup");
   const { email, password } = req.body;
+  console.log(email, password);
   try {
+    console.log(User);
+    console.log("entro en try");
     const existingUser = await User.findOne({ email });
-
+    console.log("existing user:", existingUser);
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({
       email,
       password: hashedPassword,
     });
 
+    console.log("new user:", newUser);
+
     const saveUser = await newUser.save();
     if (saveUser) {
+      console.log("se creo new user");
       return res.json({ message: "user created", userData: newUser });
     }
   } catch (error) {
+    console.log("retorno el catch");
     return res.status(500).json({ error: "Internal server error" });
   }
 }
